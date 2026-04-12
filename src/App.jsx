@@ -104,7 +104,7 @@ function App() {
   const revealTextRef = useRef(null);
 
   /* Número de colunas para o efeito "persiana" */
-  const NUM_COLUMNS = 10;
+
 
   /* ═══════════════════════════════════════════════
      GSAP SCROLL TIMELINE
@@ -186,74 +186,86 @@ function App() {
     { scope: pinnedRef },
   );
 
+  // Força refresh do ScrollTrigger após carregar para evitar bugs de altura no mobile
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const isMobile = window.innerWidth < 768;
+  const NUM_COLUMNS = isMobile ? 1 : 10;
+
   /* ═══════════════════════════════════════════════
      RENDER
      ═══════════════════════════════════════════════ */
   return (
-    <div className="relative w-full bg-black font-sans selection:bg-orange-500/30">
+    <div className="relative w-full bg-transparent font-sans selection:bg-orange-500/30">
+      
+      {/* ── Background Fixo (Para toda a aplicação) ── */}
+      <div className="fixed inset-0 z-[-1] pointer-events-none">
+        <Suspense fallback={<div className="h-full w-full bg-black" />}>
+          <ShaderGradientCanvas
+            className="h-full w-full"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+          >
+            <ShaderGradient
+              animate="on"
+              axesHelper="off"
+              bgColor1="#000000"
+              bgColor2="#000000"
+              brightness={1.1}
+              cAzimuthAngle={180}
+              cDistance={4.49}
+              cPolarAngle={115}
+              cameraZoom={1}
+              color1="#5606ff"
+              color2="#fe8989"
+              color3="#000000"
+              destination="onCanvas"
+              embedMode="off"
+              envPreset="city"
+              format="gif"
+              fov={45}
+              frameRate={15}
+              gizmoHelper="hide"
+              grain="off"
+              lightType="3d"
+              pixelDensity={isMobile ? 0.6 : 1}
+              positionX={-0.5}
+              positionY={0.1}
+              positionZ={0}
+              range="disabled"
+              rangeEnd={40}
+              rangeStart={0}
+              reflection={0.1}
+              rotationX={0}
+              rotationY={0}
+              rotationZ={235}
+              shader="defaults"
+              type="waterPlane"
+              uAmplitude={0}
+              uDensity={1.1}
+              uFrequency={5.0}
+              uSpeed={0.3}
+              uStrength={2.4}
+              uTime={0.2}
+              wireframe={false}
+            />
+          </ShaderGradientCanvas>
+        </Suspense>
+      </div>
 
       {/* ════════════════════════════════════════════
           SEÇÃO PINADA: Hero + Cortina + Texto
-          Tudo vive dentro de uma única div h-screen.
-          O GSAP pina ela e controla as camadas.
           ════════════════════════════════════════════ */}
       <div
         ref={pinnedRef}
         className="relative h-[100dvh] w-full overflow-hidden"
       >
-        {/* ── Camada 0: Shader Gradient Background ── */}
-        <div className="absolute inset-0 z-0">
-          <Suspense fallback={<div className="h-full w-full bg-black" />}>
-            <ShaderGradientCanvas
-              className="h-full w-full"
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            >
-              <ShaderGradient
-                animate="on"
-                axesHelper="off"
-                bgColor1="#000000"
-                bgColor2="#000000"
-                brightness={1.1}
-                cAzimuthAngle={180}
-                cDistance={4.49}
-                cPolarAngle={115}
-                cameraZoom={1}
-                color1="#5606ff"
-                color2="#fe8989"
-                color3="#000000"
-                destination="onCanvas"
-                embedMode="off"
-                envPreset="city"
-                format="gif"
-                fov={45}
-                frameRate={10}
-                gizmoHelper="hide"
-                grain="off"
-                lightType="3d"
-                pixelDensity={1}
-                positionX={-0.5}
-                positionY={0.1}
-                positionZ={0}
-                range="disabled"
-                rangeEnd={40}
-                rangeStart={0}
-                reflection={0.1}
-                rotationX={0}
-                rotationY={0}
-                rotationZ={235}
-                shader="defaults"
-                type="waterPlane"
-                uAmplitude={0}
-                uDensity={1.3}
-                uFrequency={5.5}
-                uSpeed={0.3}
-                uStrength={2.4}
-                uTime={0.2}
-                wireframe={false}
-              />
-            </ShaderGradientCanvas>
-          </Suspense>
-        </div>
+        {/* Camada 0: Espaço reservado (fundo agora é fixo) */}
+        <div className="absolute inset-0 z-0 bg-transparent" />
 
         {/* ── Camada 1: Overlay de blur/tom escuro ── */}
         <div className="absolute inset-0 z-[1] bg-black/30 backdrop-blur-[1px]" />
@@ -340,13 +352,16 @@ function App() {
           {Array.from({ length: NUM_COLUMNS }).map((_, i) => (
             <div
               key={i}
-              className="curtain-col h-full flex-1"
+              className="curtain-col h-full"
               style={{
                 backgroundColor: '#000000',
                 transformOrigin: 'top center',
                 transform: 'scaleY(0)',
-                marginLeft: i === 0 ? 0 : '-1px', // Garante sobreposição
-                width: `calc(100% / ${NUM_COLUMNS} + 1px)`, // Força largura mínima
+                marginLeft: i === 0 ? 0 : '-1px', 
+                width: `calc(${100 / NUM_COLUMNS}% + 2px)`, // Aumentado para 2px de overlap
+                willChange: 'transform',
+                position: 'relative',
+                zIndex: i + 1,
               }}
             />
           ))}

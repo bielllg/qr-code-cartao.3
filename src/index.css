@@ -10,13 +10,17 @@
   animation: shine 4s ease-in-out infinite;
 }
 
-body {
+html, body, #root {
   margin: 0;
   padding: 0;
   background-color: black;
   color: white;
   font-family: sans-serif;
   overflow-x: hidden;
+  width: 100%;
+}
+
+body {
   overflow-y: auto;
 }
 
@@ -83,4 +87,10 @@ body {
     opacity: 1; 
     filter: drop-shadow(0 0 18px rgba(150, 40, 253, 1)); 
   }
+}
+
+.curtain-col {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
 }
