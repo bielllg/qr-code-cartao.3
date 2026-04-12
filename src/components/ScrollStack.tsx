@@ -18,10 +18,10 @@ interface ScrollStackProps {
 
 const defaultBackgrounds = [
   // Texturas escuras e ultralimpas para não roubar a atenção do texto
-  "https://images.unsplash.com/photo-1604871000636-074fa5117945?auto=format&fit=crop&q=80", // dark liquid abstract
-  "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80", // dark minimal geometric
-  "https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&q=80", // deep dark gradient
-  "https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&q=80", // deep dark minimal
+  "https://images.unsplash.com/photo-1604871000636-074fa5117945?auto=format&fit=crop&q=80&w=800", // dark liquid abstract
+  "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800", // dark minimal geometric
+  "https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&q=80&w=800", // deep dark gradient
+  "https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&q=80&w=800", // deep dark minimal
 ];
 
 const ScrollStack: React.FC<ScrollStackProps> = ({

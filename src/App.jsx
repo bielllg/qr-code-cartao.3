@@ -86,8 +86,8 @@ const FAQ_CARDS = [
   },
   {
     title: "Vocês oferecem suporte após a entrega?",
-    subtitle: "Com certeza! Nossos projetos contam com até 30 dias de suporte técnico intensivo após a entrega, onde ajeitamos qualquer tipo de ajuste para ficar exatamente como esperado.",
-    badge: "🛟 Suporte Incluso",
+    subtitle: "Com certeza! Além de 30 dias de suporte total após a entrega, oferecemos planos flexíveis de manutenção mensal para garantir que seu site continue seguro, rápido e sempre atualizado.",
+    badge: "🛟 Suporte e Manutenção",
   },
   {
     title: "Eu conseguirei alterar detalhes depois?",
