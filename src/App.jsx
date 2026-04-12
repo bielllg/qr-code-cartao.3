@@ -1,14 +1,29 @@
-import React, { useRef } from 'react';
+import React, { useRef, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { ShineButton } from './components/lightswind/ShineButton';
 import { WhatsAppButton } from './components/WhatsAppButton';
+import { PortfolioButton } from './components/PortfolioButton';
 import { AuroraTextEffect } from './components/AuroraTextEffect';
-import backgroundVideo from './assets/background.mp4';
-
+import { TypingText } from './components/TypingText';
+import { ShinyText } from './components/ShinyText';
+import logoImg from '../img/5ace780f-e5ce-458f-b867-2a8b4600c760-removebg-preview.png';
 gsap.registerPlugin(ScrollTrigger);
+
+/* ─── Lazy load de componentes pesados / below-the-fold ─── */
+const ShaderGradientCanvas = lazy(() =>
+  import('@shadergradient/react').then(m => ({ default: m.ShaderGradientCanvas }))
+);
+const ShaderGradient = lazy(() =>
+  import('@shadergradient/react').then(m => ({ default: m.ShaderGradient }))
+);
+const AngledSlider = lazy(() =>
+  import('./components/AngledSlider').then(m => ({ default: m.AngledSlider }))
+);
+const ScrollStack = lazy(() => import('./components/ScrollStack'));
+const SocialKeyboard = lazy(() => import('./components/SocialKeyboard'));
 
 /* ────────────────────────────────────────────────
    Linhas de texto para a revelação com máscara
@@ -23,22 +38,62 @@ const REVEAL_LINES = [
   'do seu negócio no digital.',
 ];
 
+import {
+  SiteIcon,
+  DesignIcon,
+  SecurityIcon,
+  AutomationIcon
+} from './components/icons/ServiceIcons';
+
 const SERVICES = [
   {
     title: 'Sites & Landing Pages',
     desc: 'Desenvolvimento de alta performance com foco total em conversão de clientes.',
-    icon: '🚀',
+    icon: <SiteIcon size={80} />,
   },
   {
     title: 'Automações Customizadas',
     desc: 'Sistemas inteligentes que trabalham por você 24h por dia, 7 dias por semana.',
-    icon: '⚡',
+    icon: <AutomationIcon size={80} />,
   },
   {
     title: 'Design de Interface',
     desc: 'Experiências visuais impactantes que elevam a percepção de valor da sua marca.',
-    icon: '✨',
+    icon: <DesignIcon size={80} />,
   },
+  {
+    title: 'Segurança Digital',
+    desc: 'Sistemas blindados e proteção de dados para garantir a total integridade do seu negócio.',
+    icon: <SecurityIcon size={80} />,
+  },
+];
+
+const FAQ_CARDS = [
+  {
+    title: "Quanto tempo demora para o meu site ficar pronto?",
+    subtitle: "A maioria dos nossos viabilidade e desenvolvimento é entregue entre 2 a 4 semanas. Trabalhamos com processos estruturados para garantir resultados rápidos e sem perda de qualidade.",
+    badge: "⏱ Prazo",
+  },
+  {
+    title: "Como funciona a forma de pagamento?",
+    subtitle: "Trabalhamos com 50% de entrada para iniciarmos e 50% apenas na aprovação e entrega final. Isso traz segurança e comprometimento para ambos os lados.",
+    badge: "💳 Pagamento",
+  },
+  {
+    title: "Preciso pagar mensalidade depois de pronto?",
+    subtitle: "Não! O sistema/site será 100% seu. Você apenas terá os custos anuais básicos do servidor e domínio, a não ser que escolha assinar nosso plano VIP de manutenção contínua.",
+    badge: "📉 Sem Mensalidade",
+  },
+  {
+    title: "Vocês oferecem suporte após a entrega?",
+    subtitle: "Com certeza! Nossos projetos contam com até 30 dias de suporte técnico intensivo após a entrega, onde ajeitamos qualquer tipo de ajuste para ficar exatamente como esperado.",
+    badge: "🛟 Suporte Incluso",
+  },
+  {
+    title: "Eu conseguirei alterar detalhes depois?",
+    subtitle: "Sim! Construímos um painel focado em tornar a sua vida fácil: você poderá atualizar textos, trocar imagens ou mexer em valores do catálogo sem mexer em nenhuma linha de código.",
+    badge: "⚙️ Facilidade",
+  }
 ];
 
 function App() {
@@ -59,7 +114,7 @@ function App() {
      de baixo rolar normalmente.
      ═══════════════════════════════════════════════ */
   useGSAP(
-     () => {
+    () => {
       const pinned = pinnedRef.current;
       const heroContent = heroContentRef.current;
       const columnsContainer = columnsContainerRef.current;
@@ -73,17 +128,17 @@ function App() {
         scrollTrigger: {
           trigger: pinned,
           start: 'top top',
-          end: '+=400%',   // mais espaço para acomodar as colunas
-          scrub: 1.5,
+          end: '+=150%',   // Reduzido para ser ultra rápido
+          scrub: 1,        // Mais reativo
           pin: true,
           anticipatePin: 1,
         },
       });
 
-      /* ── Fase 1 (0→3.5): COLUNAS descem do topo + hero desaparece ── */
+      /* ── Fase 1: COLUNAS descem do topo + hero desaparece ── */
       tl.to(
         heroContent,
-        { opacity: 0, scale: 0.95, duration: 3, ease: 'power2.in' },
+        { opacity: 0, scale: 0.95, duration: 1.2, ease: 'power2.in' },
         0,
       );
       tl.fromTo(
@@ -91,43 +146,40 @@ function App() {
         { scaleY: 0 },
         {
           scaleY: 1,
-          duration: 2.5,
-          stagger: 0.2,          // cada coluna atrasa 0.2 → efeito escalonado
+          duration: 1.2,
+          stagger: 0.1,
           ease: 'power2.inOut',
         },
         0,
       );
 
-      /* ── Fase 2 (3→5.5): Revelação do texto ── */
+      /* ── Fase 2: Revelação do texto ── */
       tl.fromTo(
         lineSpans,
         { xPercent: 110, opacity: 0 },
         {
           xPercent: 0,
           opacity: 1,
-          stagger: 0.35,
-          duration: 2.5,
+          stagger: 0.15,
+          duration: 1.2,
           ease: 'power3.out',
         },
-        3,
+        1.2,
       );
 
-      /* ── Fase 3 (5→6.5): Pausa para leitura ── */
-      tl.to({}, { duration: 1.5 });
-
-      /* ── Fase 4 (6.5→9.5): Scale down — texto vira legenda ── */
+      /* ── Fase 4: Scale down — texto vira legenda ── */
       tl.to(revealText, {
         scale: 0.3,
         y: '30vh',
         opacity: 0.4,
-        duration: 3,
+        duration: 0.8,
         ease: 'power2.inOut',
       });
 
-      /* ── Fase 5 (9.5→10.5): Fade out do texto ── */
+      /* ── Fase 5: Fade out do texto ── */
       tl.to(revealText, {
         opacity: 0,
-        duration: 1,
+        duration: 0.4,
         ease: 'power1.in',
       });
     },
@@ -149,21 +201,72 @@ function App() {
         ref={pinnedRef}
         className="relative h-screen w-full overflow-hidden"
       >
-        {/* ── Camada 0: Video Background ── */}
+        {/* ── Camada 0: Shader Gradient Background ── */}
         <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="h-full w-full object-cover"
-          >
-            <source src={backgroundVideo} type="video/mp4" />
-          </video>
+          <Suspense fallback={<div className="h-full w-full bg-black" />}>
+            <ShaderGradientCanvas
+              className="h-full w-full"
+              style={{ position: 'absolute', top: 0 }}
+            >
+              <ShaderGradient
+                animate="on"
+                axesHelper="on"
+                bgColor1="#000000"
+                bgColor2="#000000"
+                brightness={1.1}
+                cAzimuthAngle={180}
+                cDistance={4.49}
+                cPolarAngle={115}
+                cameraZoom={1}
+                color1="#5606ff"
+                color2="#fe8989"
+                color3="#000000"
+                destination="onCanvas"
+                embedMode="off"
+                envPreset="city"
+                format="gif"
+                fov={45}
+                frameRate={10}
+                gizmoHelper="hide"
+                grain="off"
+                lightType="3d"
+                pixelDensity={1}
+                positionX={-0.5}
+                positionY={0.1}
+                positionZ={0}
+                range="disabled"
+                rangeEnd={40}
+                rangeStart={0}
+                reflection={0.1}
+                rotationX={0}
+                rotationY={0}
+                rotationZ={235}
+                shader="defaults"
+                type="waterPlane"
+                uAmplitude={0}
+                uDensity={1.3}
+                uFrequency={5.5}
+                uSpeed={0.3}
+                uStrength={2.4}
+                uTime={0.2}
+                wireframe={false}
+              />
+            </ShaderGradientCanvas>
+          </Suspense>
         </div>
 
         {/* ── Camada 1: Overlay de blur/tom escuro ── */}
         <div className="absolute inset-0 z-[1] bg-black/30 backdrop-blur-[1px]" />
+
+        {/* ── Header Topo ── */}
+        <header className="absolute top-0 left-0 right-0 z-[10] flex items-center justify-between p-6 md:px-12 md:py-8">
+          <div className="text-xl font-black italic tracking-widest text-white drop-shadow-md opacity-90">
+            GABRIEL <span className="text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]">WEB</span>
+          </div>
+          <div>
+            <img src={logoImg} alt="Logo" className="h-10 md:h-14 w-auto object-contain opacity-80" />
+          </div>
+        </header>
 
         {/* ── Camada 2: Conteúdo do Hero (desaparece com o scroll) ── */}
         <div
@@ -216,13 +319,14 @@ function App() {
               </motion.p>
             </div>
 
-            {/* CTA WhatsApp */}
+            {/* CTAs */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.5 }}
-              className="flex justify-center pt-6"
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6"
             >
+              <PortfolioButton />
               <WhatsAppButton />
             </motion.div>
           </div>
@@ -231,7 +335,7 @@ function App() {
         {/* ── Camada 3: COLUNAS PRETAS (descem do topo, escalonadas) ── */}
         <div
           ref={columnsContainerRef}
-          className="absolute inset-0 z-[3] flex"
+          className="pointer-events-none absolute inset-0 z-[3] flex"
         >
           {Array.from({ length: NUM_COLUMNS }).map((_, i) => (
             <div
@@ -274,59 +378,154 @@ function App() {
             viewport={{ once: true, margin: '-100px' }}
             className="mb-24 text-center"
           >
-            <p className="mb-6 text-sm font-bold uppercase tracking-[0.4em] text-purple-400">
-              Nossos Serviços
-            </p>
-            <h2 className="mb-8 text-4xl font-bold text-white md:text-6xl">
-              Criamos o futuro digital do seu{' '}
-              <span className="bg-gradient-to-r from-purple-400 to-white bg-clip-text text-transparent">
+            <div className="mb-6 flex justify-center">
+              <ShinyText
+                size="sm"
+                weight="bold"
+                className="uppercase tracking-[0.4em] drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]"
+                baseColor="rgba(192, 132, 252, 0.8)"
+                shineColor="rgba(255, 255, 255, 1)"
+                speed={2.5}
+              >
+                Nossos Serviços
+              </ShinyText>
+            </div>
+
+            <h2 className="mb-8 text-4xl font-bold text-white md:text-6xl flex justify-center flex-wrap gap-x-3 gap-y-2">
+              <TypingText as="span" fontSize="" fontWeight="" color="" duration={1.5}>
+                Criamos o futuro digital do seu
+              </TypingText>
+              <TypingText as="span" fontSize="" fontWeight="" color="bg-gradient-to-r from-purple-400 to-white bg-clip-text text-transparent" duration={0.5} delay={1.5}>
                 negócio
-              </span>
+              </TypingText>
             </h2>
             <div className="mx-auto h-1.5 w-24 rounded-full bg-gradient-to-r from-purple-600 to-transparent" />
           </motion.div>
 
-          {/* Cards de serviço */}
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
-            {SERVICES.map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: idx * 0.2 }}
-                viewport={{ once: true }}
-                className="group rounded-3xl border border-white/5 bg-white/[0.02] p-10 backdrop-blur-md transition-all duration-500 hover:border-purple-500/30 hover:bg-white/[0.05]"
-              >
-                <div className="mb-6 text-5xl transition-transform duration-500 group-hover:scale-110">
-                  {item.icon}
-                </div>
-                <h3 className="mb-4 text-2xl font-bold text-white">
-                  {item.title}
-                </h3>
-                <p className="leading-relaxed italic text-white/40">
-                  {item.desc}
-                </p>
-              </motion.div>
-            ))}
+          {/* Slider 3D Inclinado de Serviços */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            viewport={{ once: true }}
+            className="relative z-10"
+          >
+            <Suspense fallback={<div className="h-[500px] w-full flex items-center justify-center"><p className="text-white/50">Carregando serviços...</p></div>}>
+              <AngledSlider
+                items={SERVICES.map((s, i) => ({
+                  id: i,
+                  emoji: s.icon,
+                  title: s.title,
+                  description: s.desc
+                }))}
+                speed={15} // Reduzido de 30 para 15 (metade do tempo)
+                cardWidth="350px"
+                containerHeight="500px"
+                gap="60px"
+                angle={20}
+                className="!bg-transparent"
+              />
+            </Suspense>
+          </motion.div>
+
+          {/* FAQ - Perguntas Frequentes usando ScrollStack */}
+          <div className="mt-20">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: 'easeOut' }}
+              viewport={{ once: true }}
+              className="mb-8 text-center"
+            >
+              <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl mb-4 flex justify-center flex-wrap gap-x-3 gap-y-2">
+                <TypingText as="span" fontSize="" fontWeight="" color="" duration={1}>
+                  Dúvidas
+                </TypingText>
+                <TypingText as="span" fontSize="" fontWeight="" color="text-purple-400" delay={1} duration={1.2}>
+                  Frequentes
+                </TypingText>
+              </h2>
+              <p className="text-lg text-white/50 max-w-2xl mx-auto">
+                Tudo o que você precisa saber antes de dar o próximo passo rumo ao futuro do seu negócio.
+              </p>
+            </motion.div>
+
+            {/* O ScrollStack captura o Scroll para focar na animação dos cards */}
+            <Suspense fallback={<div className="h-[400px] w-full flex items-center justify-center"><p className="text-white/50">Carregando FAQ...</p></div>}>
+              <ScrollStack
+                cards={FAQ_CARDS}
+                sectionHeightMultiplier={4}
+              />
+            </Suspense>
           </div>
 
-          {/* CTA final */}
-          <motion.div
-            className="mt-32 rounded-[3rem] border border-purple-500/10 bg-gradient-to-b from-purple-900/10 to-black p-12 text-center"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="mb-8 text-3xl font-bold text-white">
-              Pronto para dominar o mercado digital?
-            </h3>
-            <WhatsAppButton />
-          </motion.div>
+          {/* Teclado Social 3D */}
+          <section className="relative z-20 mt-32 mb-16 flex flex-col items-center">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl mb-4 flex justify-center flex-wrap gap-x-3 gap-y-2">
+                <TypingText as="span" fontSize="" fontWeight="" color="" duration={0.8}>
+                  Minhas
+                </TypingText>
+                <TypingText as="span" fontSize="" fontWeight="" color="text-purple-400" delay={0.8} duration={0.8}>
+                  Redes
+                </TypingText>
+              </h2>
+              <p className="text-lg text-white/50 max-w-2xl mx-auto">
+                Conecte-se comigo.
+              </p>
+            </div>
+            <Suspense fallback={<div className="h-[300px] w-full flex items-center justify-center"><p className="text-white/50">Carregando links sociais...</p></div>}>
+              <SocialKeyboard />
+            </Suspense>
+          </section>
+
+          {/* O CTA antigo foi removido para focar no SocialKeyboard */}
+
         </div>
       </div>
 
-      {/* Decorative blur */}
+      {/* Decorative blur que ficava aqui perto */}
       <div className="pointer-events-none fixed -bottom-48 -right-48 z-0 h-[600px] w-[600px] rounded-full bg-purple-600/5 blur-[150px]" />
+
+      {/* FOOTER EVOLUIU CONCURSOS COM GRADIENTE */}
+      <div className="w-full relative mt-32 px-4 sm:px-6 md:px-12 pb-12">
+        <div className="relative w-full rounded-[3rem] overflow-hidden border border-white/5 border-t-white/10">
+
+          {/* Radial Gradient Background (Ajustado para Dark Mode com a cor roxo/indigo pedida) */}
+          <div
+            className="absolute inset-0 z-0 opacity-80"
+            style={{
+              // O usuário mandou "#fff", mas a foto é preta/escura. Ajustado para gerar o mesmo efeito dark e neon da foto!
+              background: "radial-gradient(125% 125% at 50% 10%, #08080c 40%, #6366f1 100%)",
+            }}
+          />
+
+          {/* Footer Content */}
+          <div className="relative z-10 w-full px-8 md:px-16 pt-16 pb-12 flex flex-col items-center justify-center text-center">
+
+            {/* Minimalist Separator */}
+            <div className="w-full max-w-md h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent mb-10" />
+
+            {/* Logo e Nome Gabriel Web (Estilo Limpo) */}
+            <div className="flex flex-col items-center justify-center gap-4 mb-6 opacity-90">
+              <img src={logoImg} alt="Gabriel Web Icon" className="h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
+              <span className="text-[15px] md:text-[16px] font-black italic tracking-widest text-gray-300 drop-shadow-md">
+                GABRIEL <span className="text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]">WEB</span>
+              </span>
+            </div>
+
+            {/* Enhanced Copyright */}
+            <div className="relative group cursor-default">
+              <p className="text-gray-500/80 text-[11px] md:text-[12px] tracking-wide font-light">
+                © 2026 Gabriel Web. Feito com amor por Gabriel Web.
+              </p>
+
+              {/* Decorative interactive glow */}
+              <span className="absolute left-1/2 -bottom-4 w-12 h-4 -translate-x-1/2 bg-purple-500/10 blur-xl rounded-full transition-all duration-700 ease-in-out group-hover:w-3/4 group-hover:bg-fuchsia-500/30" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

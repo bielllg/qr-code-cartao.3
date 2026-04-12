@@ -2,9 +2,31 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com; font-src 'self' https://fonts.gstatic.com;" />
+    <!-- Favicon Otimizado -->
+    <link rel="icon" type="image/png" href="/img/5ace780f-e5ce-458f-b867-2a8b4600c760-removebg-preview.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SaaS Freelancer</title>
+    
+    <!-- Meta Tags Básicas -->
+    <title>Gabriel Web</title>
+    <meta name="description" content="Gabriel Web - Criamos o futuro digital do seu negócio. Soluções e desenvolvimento web de alto nível focados em performance e conversão." />
+    
+    <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Gabriel Web | Desenvolvimento e Tecnologia" />
+    <meta property="og:description" content="Criamos o futuro digital do seu negócio com sites incríveis e de alta conversão." />
+    <meta property="og:image" content="/img/5ace780f-e5ce-458f-b867-2a8b4600c760-removebg-preview.png" />
+
+    <!-- Google Analytics (GA4) - Substitua G-WNSS6BS7KQ pelo seu ID real -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WNSS6BS7KQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WNSS6BS7KQ');
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -71,3 +71,16 @@ body {
   animation: color-change-5x 8s linear 0s infinite alternate both; 
   filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
 }
+
+@keyframes floatIcon {
+  0%, 100% { 
+    transform: translateY(0px) scale(0.95); 
+    opacity: 0.8; 
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.3)); 
+  }
+  50% { 
+    transform: translateY(-8px) scale(1.05); 
+    opacity: 1; 
+    filter: drop-shadow(0 0 18px rgba(150, 40, 253, 1)); 
+  }
+}
