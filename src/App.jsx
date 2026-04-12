@@ -71,7 +71,7 @@ const SERVICES = [
 const FAQ_CARDS = [
   {
     title: "Quanto tempo demora para o meu site ficar pronto?",
-    subtitle: "A maioria dos nossos viabilidade e desenvolvimento é entregue entre 2 a 4 semanas. Trabalhamos com processos estruturados para garantir resultados rápidos e sem perda de qualidade.",
+    subtitle: "A maioria dos nossos viabilidade e desenvolvimento é entregue entre 1 a 4 semanas. Trabalhamos com processos estruturados para garantir resultados rápidos e sem perda de qualidade.",
     badge: "⏱ Prazo",
   },
   {
@@ -86,8 +86,8 @@ const FAQ_CARDS = [
   },
   {
     title: "Vocês oferecem suporte após a entrega?",
-    subtitle: "Com certeza! Além de 30 dias de suporte total após a entrega, oferecemos planos flexíveis de manutenção mensal para garantir que seu site continue seguro, rápido e sempre atualizado.",
-    badge: "🛟 Suporte e Manutenção",
+    subtitle: "Com certeza! Nossos projetos contam com até 30 dias de suporte técnico intensivo após a entrega, onde ajeitamos qualquer tipo de ajuste para ficar exatamente como esperado.",
+    badge: "🛟 Suporte Incluso",
   },
   {
     title: "Eu conseguirei alterar detalhes depois?",
@@ -199,18 +199,18 @@ function App() {
           ════════════════════════════════════════════ */}
       <div
         ref={pinnedRef}
-        className="relative h-screen w-full overflow-hidden"
+        className="relative h-[100dvh] w-full overflow-hidden"
       >
         {/* ── Camada 0: Shader Gradient Background ── */}
         <div className="absolute inset-0 z-0">
           <Suspense fallback={<div className="h-full w-full bg-black" />}>
             <ShaderGradientCanvas
               className="h-full w-full"
-              style={{ position: 'absolute', top: 0 }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             >
               <ShaderGradient
                 animate="on"
-                axesHelper="on"
+                axesHelper="off"
                 bgColor1="#000000"
                 bgColor2="#000000"
                 brightness={1.1}
@@ -345,6 +345,8 @@ function App() {
                 backgroundColor: '#000000',
                 transformOrigin: 'top center',
                 transform: 'scaleY(0)',
+                marginLeft: i === 0 ? 0 : '-1px', // Garante sobreposição
+                width: `calc(100% / ${NUM_COLUMNS} + 1px)`, // Força largura mínima
               }}
             />
           ))}
