@@ -204,7 +204,7 @@ function App() {
     <div className="relative w-full bg-transparent font-sans selection:bg-orange-500/30">
       
       {/* ── Background Fixo (Para toda a aplicação) ── */}
-      <div className="fixed inset-0 z-[-1] pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <Suspense fallback={<div className="h-full w-full bg-black" />}>
           <ShaderGradientCanvas
             className="h-full w-full"
@@ -226,7 +226,6 @@ function App() {
               destination="onCanvas"
               embedMode="off"
               envPreset="city"
-              format="gif"
               fov={45}
               frameRate={15}
               gizmoHelper="hide"
@@ -262,7 +261,7 @@ function App() {
           ════════════════════════════════════════════ */}
       <div
         ref={pinnedRef}
-        className="relative h-[100dvh] w-full overflow-hidden"
+        className="relative z-10 h-[100dvh] w-full overflow-hidden"
       >
         {/* Camada 0: Espaço reservado (fundo agora é fixo) */}
         <div className="absolute inset-0 z-0 bg-transparent" />
