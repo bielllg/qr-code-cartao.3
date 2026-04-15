@@ -16,16 +16,24 @@ const keyboardLayout = [
 ];
 
 // --- Componente da Tecla ---
-const Keycap = ({ skill, isActive, onMouseEnter, onMouseLeave }) => {
+const Keycap = ({ skill, isActive, onMouseEnter, onMouseLeave, onToggle }) => {
+  const isTouchDevice = 'ontouchstart' in window;
   return (
     <div 
-      // CORREÇÃO AQUI: Tamanho fixo (w-16 h-16 sm:w-20 sm:h-20) no contentor pai 
-      // Garante que a área de deteção do rato não se mexe quando a tecla é pressionada
       className="relative group cursor-pointer preserve-3d w-16 h-16 sm:w-20 sm:h-20"
-      onMouseEnter={() => onMouseEnter(skill)}
-      onMouseLeave={onMouseLeave}
+      onMouseEnter={() => !isTouchDevice && onMouseEnter(skill)}
+      onMouseLeave={() => !isTouchDevice && onMouseLeave()}
       onClick={() => {
-        if (skill.link) window.open(skill.link, '_blank', 'noopener,noreferrer');
+        if (isTouchDevice) {
+          // On touch: first tap toggles popup, second tap (when active) opens link
+          if (isActive && skill.link) {
+            window.open(skill.link, '_blank', 'noopener,noreferrer');
+          } else {
+            onToggle(skill);
+          }
+        } else {
+          if (skill.link) window.open(skill.link, '_blank', 'noopener,noreferrer');
+        }
       }}
     >
       {/* A Tecla 3D */}
@@ -93,12 +101,22 @@ const Keycap = ({ skill, isActive, onMouseEnter, onMouseLeave }) => {
 export default function SocialKeyboard() {
   const [activeSkillId, setActiveSkillId] = useState(null);
 
+  const handleToggle = (skill) => {
+    setActiveSkillId(prev => prev === skill.id ? null : skill.id);
+  };
+
   const rows = keyboardLayout.map(row => 
     row.map(id => skillsData.find(skill => skill.id === id))
   );
 
   return (
-    <div className="w-full relative flex flex-col items-center justify-center font-sans overflow-visible py-20 z-20">
+    <div 
+      className="w-full relative flex flex-col items-center justify-center font-sans overflow-visible py-10 md:py-20 z-20"
+      onClick={(e) => {
+        // Click outside any keycap dismisses popup on mobile
+        if (!e.target.closest('.preserve-3d')) setActiveSkillId(null);
+      }}
+    >
       
       <style>{`
         .preserve-3d {
@@ -141,6 +159,7 @@ export default function SocialKeyboard() {
                   isActive={activeSkillId === skill.id}
                   onMouseEnter={(s) => setActiveSkillId(s.id)}
                   onMouseLeave={() => setActiveSkillId(null)}
+                  onToggle={handleToggle}
                 />
               ))}
             </div>

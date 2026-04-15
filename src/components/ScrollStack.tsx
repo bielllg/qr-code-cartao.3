@@ -50,14 +50,11 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      // Ignora se não existir as ref
       if (!sectionRef.current || !scrollableSectionRef.current) return;
 
       const rect = sectionRef.current.getBoundingClientRect();
       const scrollContainer = scrollableSectionRef.current;
       
-      // O PONTO CHAVE: 'rect.top <= 100' faz com que ele trave com 100px de sobra em cima,
-      // o que permite ler o título "Dúvidas Frequentes" acima dele sem empurrá-lo para fora!
       const isInView = rect.top <= 100 && rect.bottom >= window.innerHeight * 0.5;
       
       const hasCompletedScroll = 
@@ -65,7 +62,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
         
       const isAtTop = scrollContainer.scrollTop <= 10;
 
-      // Se a sessão está perfeitamente alinhada e no momento certo
       if (isInView && !hasCompletedScroll && e.deltaY > 0) {
         e.preventDefault();
         scrollContainer.scrollTop += e.deltaY;
@@ -75,12 +71,40 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       }
     };
 
+    // Touch handling for mobile
+    let touchStartY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!sectionRef.current || !scrollableSectionRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const scrollContainer = scrollableSectionRef.current;
+      const isInView = rect.top <= 100 && rect.bottom >= window.innerHeight * 0.5;
+      const deltaY = touchStartY - e.touches[0].clientY;
+      touchStartY = e.touches[0].clientY;
+      const hasCompletedScroll = scrollContainer.scrollTop >= scrollContainer.scrollHeight - scrollContainer.clientHeight - 10;
+      const isAtTop = scrollContainer.scrollTop <= 10;
+
+      if (isInView && !hasCompletedScroll && deltaY > 0) {
+        e.preventDefault();
+        scrollContainer.scrollTop += deltaY;
+      } else if (isInView && !isAtTop && deltaY < 0) {
+        e.preventDefault();
+        scrollContainer.scrollTop += deltaY;
+      }
+    };
+
     if (isIntersecting) {
       window.addEventListener("wheel", handleWheel, { passive: false });
+      window.addEventListener("touchstart", handleTouchStart, { passive: true });
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
     }
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
   }, [isIntersecting]);
 
@@ -138,7 +162,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
         <div
           className={`sticky top-0 w-full h-[85vh] flex items-center justify-center overflow-hidden ${backgroundColor}`}
         >
-          <div className="relative w-full max-w-4xl mx-auto h-[450px]">
+          <div className="relative w-full max-w-4xl mx-auto h-[350px] md:h-[450px]">
             {cards.map((card, index) => {
               const bg =
                 card.backgroundImage ||

@@ -94,3 +94,30 @@ body {
   transform-style: preserve-3d;
   -webkit-backface-visibility: hidden;
 }
+
+/* Mobile-specific performance optimizations */
+@media (max-width: 768px) {
+  .curtain-col {
+    will-change: transform;
+  }
+  
+  /* Reduce animation complexity on mobile */
+  .line-text {
+    will-change: transform, opacity;
+  }
+  
+  /* Smoother scrolling on mobile */
+  html {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto;
+  }
+}
+
+/* Respect reduce-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

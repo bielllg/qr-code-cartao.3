@@ -194,8 +194,13 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  const isMobile = window.innerWidth < 768;
-  const NUM_COLUMNS = isMobile ? 1 : 10;
+  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth < 768);
+  React.useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  const NUM_COLUMNS = isMobile ? 5 : 10;
 
   /* ═══════════════════════════════════════════════
      RENDER
@@ -205,55 +210,66 @@ function App() {
       
       {/* ── Background Fixo (Para toda a aplicação) ── */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <Suspense fallback={<div className="h-full w-full bg-black" />}>
-          <ShaderGradientCanvas
-            className="h-full w-full"
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-          >
-            <ShaderGradient
-              animate="on"
-              axesHelper="off"
-              bgColor1="#000000"
-              bgColor2="#000000"
-              brightness={1.1}
-              cAzimuthAngle={180}
-              cDistance={4.49}
-              cPolarAngle={115}
-              cameraZoom={1}
-              color1="#5606ff"
-              color2="#fe8989"
-              color3="#000000"
-              destination="onCanvas"
-              embedMode="off"
-              envPreset="city"
-              fov={45}
-              frameRate={15}
-              gizmoHelper="hide"
-              grain="off"
-              lightType="3d"
-              pixelDensity={isMobile ? 0.6 : 1}
-              positionX={-0.5}
-              positionY={0.1}
-              positionZ={0}
-              range="disabled"
-              rangeEnd={40}
-              rangeStart={0}
-              reflection={0.1}
-              rotationX={0}
-              rotationY={0}
-              rotationZ={235}
-              shader="defaults"
-              type="waterPlane"
-              uAmplitude={0}
-              uDensity={1.1}
-              uFrequency={5.0}
-              uSpeed={0.3}
-              uStrength={2.4}
-              uTime={0.2}
-              wireframe={false}
-            />
-          </ShaderGradientCanvas>
-        </Suspense>
+        {/* CSS gradient - always visible as base layer */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at 30% 50%, #1a0040 0%, #0a001a 40%, #000000 70%), radial-gradient(ellipse at 70% 80%, #2d0066 0%, transparent 60%)',
+            backgroundBlendMode: 'screen',
+          }}
+        />
+        {/* ShaderGradient overlays CSS gradient on desktop only */}
+        {!isMobile && (
+          <Suspense fallback={null}>
+            <ShaderGradientCanvas
+              className="h-full w-full"
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            >
+              <ShaderGradient
+                animate="on"
+                axesHelper="off"
+                bgColor1="#000000"
+                bgColor2="#000000"
+                brightness={1.1}
+                cAzimuthAngle={180}
+                cDistance={4.49}
+                cPolarAngle={115}
+                cameraZoom={1}
+                color1="#5606ff"
+                color2="#fe8989"
+                color3="#000000"
+                destination="onCanvas"
+                embedMode="off"
+                envPreset="city"
+                fov={45}
+                frameRate={15}
+                gizmoHelper="hide"
+                grain="off"
+                lightType="3d"
+                pixelDensity={1}
+                positionX={-0.5}
+                positionY={0.1}
+                positionZ={0}
+                range="disabled"
+                rangeEnd={40}
+                rangeStart={0}
+                reflection={0.1}
+                rotationX={0}
+                rotationY={0}
+                rotationZ={235}
+                shader="defaults"
+                type="waterPlane"
+                uAmplitude={0}
+                uDensity={1.1}
+                uFrequency={5.0}
+                uSpeed={0.3}
+                uStrength={2.4}
+                uTime={0.2}
+                wireframe={false}
+              />
+            </ShaderGradientCanvas>
+          </Suspense>
+        )}
       </div>
 
       {/* ════════════════════════════════════════════
@@ -267,7 +283,7 @@ function App() {
         <div className="absolute inset-0 z-0 bg-transparent" />
 
         {/* ── Camada 1: Overlay de blur/tom escuro ── */}
-        <div className="absolute inset-0 z-[1] bg-black/30 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 z-[1] bg-black/20" />
 
         {/* ── Header Topo ── */}
         <header className="absolute top-0 left-0 right-0 z-[10] flex items-center justify-between p-6 md:px-12 md:py-8">
@@ -369,11 +385,11 @@ function App() {
         {/* ── Camada 4: Texto de revelação (sobre a cortina) ── */}
         <div
           ref={revealTextRef}
-          className="pointer-events-none absolute inset-0 z-[4] flex flex-col items-center justify-center px-6 text-center"
+          className="pointer-events-none absolute inset-0 z-[4] flex flex-col items-center justify-center px-4 md:px-6 text-center"
         >
           {REVEAL_LINES.map((line, i) => (
-            <div key={i} className="overflow-hidden py-1 md:py-3">
-              <span className="line-text block text-2xl font-black uppercase leading-[1.15] tracking-tighter text-white sm:text-4xl md:text-5xl lg:text-[4.5rem]">
+            <div key={i} className="overflow-hidden py-0.5 md:py-3">
+              <span className="line-text block text-[0.8rem] font-black uppercase leading-[1.2] tracking-tighter text-white break-words sm:text-2xl md:text-5xl lg:text-[4.5rem]">
                 {line}
               </span>
             </div>
@@ -384,7 +400,7 @@ function App() {
       {/* ════════════════════════════════════════════
           SEÇÃO DE SERVIÇOS — Scroll natural após pin
           ════════════════════════════════════════════ */}
-      <div className="relative z-10 bg-black px-6 pb-20 pt-24">
+      <div className="relative z-10 bg-black px-4 md:px-6 pb-10 md:pb-20 pt-16 md:pt-24">
         <div className="mx-auto max-w-6xl">
           {/* Header */}
           <motion.div
@@ -476,7 +492,7 @@ function App() {
           </div>
 
           {/* Teclado Social 3D */}
-          <section className="relative z-20 mt-32 mb-16 flex flex-col items-center">
+          <section className="relative z-20 mt-16 md:mt-32 mb-8 md:mb-16 flex flex-col items-center">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl mb-4 flex justify-center flex-wrap gap-x-3 gap-y-2">
                 <TypingText as="span" fontSize="" fontWeight="" color="" duration={0.8}>
@@ -504,7 +520,7 @@ function App() {
       <div className="pointer-events-none fixed -bottom-48 -right-48 z-0 h-[600px] w-[600px] rounded-full bg-purple-600/5 blur-[150px]" />
 
       {/* FOOTER EVOLUIU CONCURSOS COM GRADIENTE */}
-      <div className="w-full relative mt-32 px-4 sm:px-6 md:px-12 pb-12">
+      <div className="w-full relative mt-8 md:mt-20 px-4 sm:px-6 md:px-12 pb-12">
         <div className="relative w-full rounded-[3rem] overflow-hidden border border-white/5 border-t-white/10">
 
           {/* Radial Gradient Background (Ajustado para Dark Mode com a cor roxo/indigo pedida) */}
