@@ -14,7 +14,9 @@ export const WhatsAppButton = ({ numeroTelefone = "31988004874", mensagemPadrao 
       aria-label="Contactar por WhatsApp"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative flex items-center w-[214px] h-[54px] bg-white/10 backdrop-blur-md border border-white/20 rounded-full shadow-[0_10px_40px_rgba(255,255,255,0.5)] hover:shadow-[0_15px_60px_rgba(255,255,255,0.8)] transition-all duration-300 hover:scale-105 focus:outline-none overflow-hidden"
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => setTimeout(() => setIsHovered(false), 600)}
+      className="group relative flex items-center w-[214px] h-[54px] bg-white/10 backdrop-blur-md border border-white/20 rounded-full shadow-[0_10px_40px_rgba(255,255,255,0.5)] hover:shadow-[0_15px_60px_rgba(255,255,255,0.8)] transition-all duration-300 hover:scale-105 active:scale-105 focus:outline-none overflow-hidden"
     >
       {/* Texto: Começa na direita e desliza para a esquerda */}
       <motion.span

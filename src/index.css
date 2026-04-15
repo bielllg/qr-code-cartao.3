@@ -89,6 +89,11 @@ body {
   }
 }
 
+@keyframes pulseGlow {
+  0% { opacity: 0.2; transform: scale(0.9); }
+  100% { opacity: 0.5; transform: scale(1.1); }
+}
+
 .curtain-col {
   backface-visibility: hidden;
   transform-style: preserve-3d;
@@ -111,13 +116,23 @@ body {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: auto;
   }
+
+  /* Ensure touch targets are large enough */
+  .preserve-3d {
+    touch-action: manipulation;
+  }
+  
+  /* Stronger glow on mobile to compensate for no WebGL */
+  @keyframes pulseGlow {
+    0% { opacity: 0.3; transform: scale(0.95); }
+    100% { opacity: 0.65; transform: scale(1.15); }
+  }
 }
 
-/* Respect reduce-motion preference */
+/* Respect reduce-motion preference - only reduce, don't disable completely */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation-duration: 3s !important;
+    transition-duration: 0.3s !important;
   }
 }

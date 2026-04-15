@@ -152,7 +152,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       onScroll={handleScroll}
       // CRÍTICO: Removido overflow-y-scroll e colocado overflow-hidden
       // para evitar que o mouse dê scroll nativo nas cartas ANTES da tela travar.
-      className="relative w-full h-[85vh] overflow-hidden [&::-webkit-scrollbar]:hidden"
+      className="relative w-full h-[70vh] sm:h-[85vh] overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden"
     >
       <div
         ref={sectionRef}
@@ -160,9 +160,9 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
         style={{ height: `${sectionHeightMultiplier * 100}vh` }}
       >
         <div
-          className={`sticky top-0 w-full h-[85vh] flex items-center justify-center overflow-hidden ${backgroundColor}`}
+          className={`sticky top-0 w-full h-[70vh] sm:h-[85vh] flex items-center justify-center overflow-hidden ${backgroundColor}`}
         >
-          <div className="relative w-full max-w-4xl mx-auto h-[350px] md:h-[450px]">
+          <div className="relative w-full max-w-4xl mx-auto px-4 h-[280px] sm:h-[350px] md:h-[450px]">
             {cards.map((card, index) => {
               const bg =
                 card.backgroundImage ||

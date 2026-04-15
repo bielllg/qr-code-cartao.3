@@ -20,7 +20,8 @@ const Keycap = ({ skill, isActive, onMouseEnter, onMouseLeave, onToggle }) => {
   const isTouchDevice = 'ontouchstart' in window;
   return (
     <div 
-      className="relative group cursor-pointer preserve-3d w-16 h-16 sm:w-20 sm:h-20"
+      className="relative group cursor-pointer preserve-3d w-14 h-14 sm:w-20 sm:h-20"
+      data-active={isActive ? "true" : "false"}
       onMouseEnter={() => !isTouchDevice && onMouseEnter(skill)}
       onMouseLeave={() => !isTouchDevice && onMouseLeave()}
       onClick={() => {
@@ -70,7 +71,7 @@ const Keycap = ({ skill, isActive, onMouseEnter, onMouseLeave, onToggle }) => {
                -15px 15px 30px rgba(0,0,0,0.9)`
         }}
       >
-        <div className={`w-8 h-8 sm:w-10 sm:h-10 transition-all duration-300 ${isActive ? 'drop-shadow-[0_0_25px_rgba(255,255,255,1)] opacity-100 scale-125' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] opacity-90'}`}>
+        <div className={`w-7 h-7 sm:w-10 sm:h-10 transition-all duration-300 ${isActive ? 'drop-shadow-[0_0_25px_rgba(255,255,255,1)] opacity-100 scale-125' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] opacity-90'}`}>
           {skill.icon}
         </div>
       </div>
@@ -133,8 +134,14 @@ export default function SocialKeyboard() {
           transform: translateZ(20px) rotateZ(35deg) rotateX(-55deg) translateY(-20px) scale(0.9);
         }
         
-        .group:hover .hologram-popup, .group:active .hologram-popup {
+        .group:hover .hologram-popup,
+        .group:active .hologram-popup,
+        .group[data-active="true"] .hologram-popup {
           transform: translateZ(60px) rotateZ(35deg) rotateX(-55deg) translateY(-60px) scale(1);
+        }
+
+        .group[data-active="true"] .hologram-popup {
+          opacity: 1 !important;
         }
 
         .keycap-element {
@@ -150,7 +157,7 @@ export default function SocialKeyboard() {
             <div 
               key={rowIndex} 
               className="flex gap-6 sm:gap-8 preserve-3d"
-              style={{ marginLeft: `${rowIndex * 2.5}rem` }} 
+              style={{ marginLeft: `${rowIndex * 1.5}rem` }} 
             >
               {row.map(skill => skill && (
                 <Keycap 

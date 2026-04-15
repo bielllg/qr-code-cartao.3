@@ -13,7 +13,9 @@ export const PortfolioButton = () => {
       aria-label="Ver Portfólio"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative flex items-center w-[214px] h-[54px] bg-white/5 backdrop-blur-md border border-white/10 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none overflow-hidden"
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => setTimeout(() => setIsHovered(false), 600)}
+      className="group relative flex items-center w-[214px] h-[54px] bg-white/5 backdrop-blur-md border border-white/10 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 active:scale-105 focus:outline-none overflow-hidden"
     >
       {/* Texto: Começa na direita e desliza para a esquerda */}
       <motion.span

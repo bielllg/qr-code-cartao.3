@@ -214,62 +214,102 @@ function App() {
         <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse at 30% 50%, #1a0040 0%, #0a001a 40%, #000000 70%), radial-gradient(ellipse at 70% 80%, #2d0066 0%, transparent 60%)',
-            backgroundBlendMode: 'screen',
+            background: 'linear-gradient(135deg, #0a0015 0%, #1a0040 25%, #0d0025 50%, #180038 75%, #05000f 100%)',
           }}
         />
-        {/* ShaderGradient overlays CSS gradient on desktop only */}
-        {!isMobile && (
-          <Suspense fallback={null}>
-            <ShaderGradientCanvas
-              className="h-full w-full"
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            >
-              <ShaderGradient
-                animate="on"
-                axesHelper="off"
-                bgColor1="#000000"
-                bgColor2="#000000"
-                brightness={1.1}
-                cAzimuthAngle={180}
-                cDistance={4.49}
-                cPolarAngle={115}
-                cameraZoom={1}
-                color1="#5606ff"
-                color2="#fe8989"
-                color3="#000000"
-                destination="onCanvas"
-                embedMode="off"
-                envPreset="city"
-                fov={45}
-                frameRate={15}
-                gizmoHelper="hide"
-                grain="off"
-                lightType="3d"
-                pixelDensity={1}
-                positionX={-0.5}
-                positionY={0.1}
-                positionZ={0}
-                range="disabled"
-                rangeEnd={40}
-                rangeStart={0}
-                reflection={0.1}
-                rotationX={0}
-                rotationY={0}
-                rotationZ={235}
-                shader="defaults"
-                type="waterPlane"
-                uAmplitude={0}
-                uDensity={1.1}
-                uFrequency={5.0}
-                uSpeed={0.3}
-                uStrength={2.4}
-                uTime={0.2}
-                wireframe={false}
-              />
-            </ShaderGradientCanvas>
-          </Suspense>
-        )}
+        {/* Animated glow orbs — higher opacity for rich mobile background */}
+        <div
+          className="absolute w-[70vw] h-[70vw] md:w-[60vw] md:h-[60vw] rounded-full opacity-60 md:opacity-40"
+          style={{
+            background: 'radial-gradient(circle, #5606ff 0%, transparent 70%)',
+            top: '15%',
+            left: '5%',
+            filter: 'blur(60px)',
+            animation: 'pulseGlow 6s ease-in-out infinite alternate',
+          }}
+        />
+        <div
+          className="absolute w-[60vw] h-[60vw] md:w-[50vw] md:h-[50vw] rounded-full opacity-50 md:opacity-30"
+          style={{
+            background: 'radial-gradient(circle, #fe8989 0%, transparent 70%)',
+            bottom: '10%',
+            right: '0%',
+            filter: 'blur(70px)',
+            animation: 'pulseGlow 8s ease-in-out 2s infinite alternate',
+          }}
+        />
+        <div
+          className="absolute w-[55vw] h-[55vw] md:w-[40vw] md:h-[40vw] rounded-full opacity-45 md:opacity-25"
+          style={{
+            background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)',
+            top: '50%',
+            right: '10%',
+            filter: 'blur(50px)',
+            animation: 'pulseGlow 5s ease-in-out 1s infinite alternate',
+          }}
+        />
+        {/* Extra orb for mobile depth */}
+        <div
+          className="absolute w-[45vw] h-[45vw] rounded-full opacity-35 md:opacity-20"
+          style={{
+            background: 'radial-gradient(circle, #a855f7 0%, transparent 60%)',
+            top: '70%',
+            left: '20%',
+            filter: 'blur(60px)',
+            animation: 'pulseGlow 7s ease-in-out 3s infinite alternate',
+          }}
+        />
+        {/* ShaderGradient — animated on all devices, lower settings on mobile */}
+        <Suspense fallback={null}>
+          <ShaderGradientCanvas
+            className="h-full w-full"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            pixelDensity={isMobile ? 0.5 : 1}
+          >
+            <ShaderGradient
+              animate="on"
+              axesHelper="off"
+              bgColor1="#000000"
+              bgColor2="#000000"
+              brightness={1.1}
+              cAzimuthAngle={180}
+              cDistance={4.49}
+              cPolarAngle={115}
+              cameraZoom={1}
+              color1="#5606ff"
+              color2="#fe8989"
+              color3="#000000"
+              destination="onCanvas"
+              embedMode="off"
+              envPreset="city"
+              fov={45}
+              frameRate={isMobile ? 10 : 15}
+              gizmoHelper="hide"
+              grain="off"
+              lightType="3d"
+              pixelDensity={isMobile ? 0.5 : 1}
+              positionX={-0.5}
+              positionY={0.1}
+              positionZ={0}
+              range="disabled"
+              rangeEnd={40}
+              rangeStart={0}
+              reflection={0.1}
+              rotationX={0}
+              rotationY={0}
+              rotationZ={235}
+              shader="defaults"
+              type="waterPlane"
+              uAmplitude={0}
+              uDensity={1.1}
+              uFrequency={5.0}
+              uSpeed={isMobile ? 0.2 : 0.3}
+              uStrength={2.4}
+              uTime={0.2}
+              wireframe={false}
+            />
+          </ShaderGradientCanvas>
+        </Suspense>
       </div>
 
       {/* ════════════════════════════════════════════
@@ -300,7 +340,7 @@ function App() {
           ref={heroContentRef}
           className="relative z-[2] flex h-full flex-col items-center justify-center p-6 text-center text-white"
         >
-          <div className="flex max-w-7xl flex-col items-center gap-8 px-4">
+          <div className="flex max-w-7xl flex-col items-center gap-5 md:gap-8 px-4">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -315,9 +355,9 @@ function App() {
               />
             </motion.div>
 
-            <div className="space-y-10">
+            <div className="space-y-5 md:space-y-10">
               {/* Título principal */}
-              <h1 className="slide-in-elliptic-top-bck-normal mx-auto max-w-none text-4xl font-bold uppercase italic leading-[1.1] tracking-tight sm:text-5xl md:text-7xl">
+              <h1 className="slide-in-elliptic-top-bck-normal mx-auto max-w-none text-[1.7rem] font-bold uppercase italic leading-[1.1] tracking-tight sm:text-5xl md:text-7xl">
                 O próximo nível do seu{' '}
                 <AuroraTextEffect
                   text="negócio"
@@ -339,7 +379,7 @@ function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-                className="mx-auto max-w-3xl text-lg font-bold leading-relaxed text-white/50 md:text-2xl"
+                className="mx-auto max-w-3xl text-[0.9rem] font-bold leading-relaxed text-white/50 sm:text-lg md:text-2xl"
               >
                 Desenvolvemos soluções digitais inteligentes para negócios que
                 querem escalar com tecnologia, design e automação.
@@ -351,7 +391,7 @@ function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.5 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6"
+              className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3 md:pt-6"
             >
               <PortfolioButton />
               <WhatsAppButton />
@@ -388,8 +428,8 @@ function App() {
           className="pointer-events-none absolute inset-0 z-[4] flex flex-col items-center justify-center px-4 md:px-6 text-center"
         >
           {REVEAL_LINES.map((line, i) => (
-            <div key={i} className="overflow-hidden py-0.5 md:py-3">
-              <span className="line-text block text-[0.8rem] font-black uppercase leading-[1.2] tracking-tighter text-white break-words sm:text-2xl md:text-5xl lg:text-[4.5rem]">
+            <div key={i} className="overflow-hidden py-[2px] sm:py-1 md:py-3">
+              <span className="line-text block text-[1.05rem] font-black uppercase leading-[1.25] tracking-tight text-white sm:text-2xl md:text-5xl lg:text-[4.5rem]" style={{ wordBreak: 'break-word' }}>
                 {line}
               </span>
             </div>
@@ -450,11 +490,11 @@ function App() {
                   title: s.title,
                   description: s.desc
                 }))}
-                speed={15} // Reduzido de 30 para 15 (metade do tempo)
-                cardWidth="350px"
-                containerHeight="500px"
-                gap="60px"
-                angle={20}
+                speed={15}
+                cardWidth={isMobile ? '260px' : '350px'}
+                containerHeight={isMobile ? '400px' : '500px'}
+                gap={isMobile ? '24px' : '60px'}
+                angle={isMobile ? 12 : 20}
                 className="!bg-transparent"
               />
             </Suspense>
@@ -492,8 +532,8 @@ function App() {
           </div>
 
           {/* Teclado Social 3D */}
-          <section className="relative z-20 mt-16 md:mt-32 mb-8 md:mb-16 flex flex-col items-center">
-            <div className="text-center mb-16">
+          <section className="relative z-20 mt-10 md:mt-32 mb-6 md:mb-16 flex flex-col items-center">
+            <div className="text-center mb-8 md:mb-16">
               <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl mb-4 flex justify-center flex-wrap gap-x-3 gap-y-2">
                 <TypingText as="span" fontSize="" fontWeight="" color="" duration={0.8}>
                   Minhas

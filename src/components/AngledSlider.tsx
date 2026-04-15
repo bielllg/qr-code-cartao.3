@@ -111,7 +111,7 @@ const AngledCard = ({
         >
             {/* The Service Card Content */}
             <div className="relative h-full w-full overflow-hidden border border-white/10 bg-zinc-900/50 
-            min-h-[350px] shadow-2xl rounded-[2rem] backdrop-blur-xl p-8 flex flex-col justify-center items-center text-center group-hover:border-purple-500/50 transition-colors duration-500">
+            min-h-[280px] sm:min-h-[350px] shadow-2xl rounded-[2rem] backdrop-blur-xl p-6 sm:p-8 flex flex-col justify-center items-center text-center group-hover:border-purple-500/50 transition-colors duration-500">
                 {/* Background Glow */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                 
